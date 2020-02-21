@@ -1,0 +1,160 @@
+features
+	points, areas
+		parking : amenity=parking
+		railway station : railway=station
+		park : leisure=park OR leisure=playground
+
+	lines
+		railway : railway=rail AND @isFalse(disused) AND NOT service=yard AND @isFalse(noexit)
+
+		motorway : highway=motorway
+		motorway link : highway=motorway_link
+		major road : @isOneOf(highway, trunk, trunk_link, primary, primary_link, secondary, tertiary)
+		minor road : @isOneOf(highway, unclassified, residential, service, living_street) OR (highway=track AND (@isOneOf(tracktype, grade1, grade2, grade3) OR NOT tracktype))
+		
+		water line : waterway=stream OR waterway=river
+
+	areas
+		water : natural=water OR natural=wetland OR waterway=riverbank OR waterway=stream OR landuse=reservoir OR landuse=basin
+		aeroway area : aeroway
+		industrial : landuse=industrial
+		residential area : landuse=residential
+		sport : sport
+		forest : landuse=forest OR natural=wood
+
+
+properties
+	map-background-color	: #F2EFE9
+	map-background-opacity	: 1
+	map-sea-color : #99B3CC
+	font-weight : bold
+	font-family : Arial
+	text-max-width : 7
+	text-halo-width : 35%
+	text-halo-opacity : 0.75
+	text-align-horizontal : center
+	text-align-vertical : center
+	font-stretch : 0.9
+	map.rendering.lflp.min-buffer-space : 5
+	map.rendering.lflp.max-allowed-corner-angle : 40
+
+rules
+// texts
+	
+
+// lines
+
+	target : boundary*
+		define
+			line-color : #818181
+			line-width : 2
+			border-style : solid
+			border-color : #818181
+			border-width : 110%
+			border-opacity : 0.4
+		draw : line
+
+	target : aeroway line*
+		define
+			min-zoom : 9
+			line-color : #9D9595
+		if : aeroway line runway
+			define
+				line-width : 9:1;10:1;11:2;13:6;15:20
+		else
+			define
+				line-width : 9:1;11:1;13:3;15:10
+		draw : line
+
+	
+
+	target : motorway
+		define
+			line-width : 7:1;13:3;15:10
+			min-zoom : 7
+			line-color : #fd923a
+		draw : line
+
+	target : motorway link
+		define
+			line-width : 7:1;13:2;15:3
+			min-zoom : 10
+			line-color : #ffe068
+		draw : line
+
+	target : major road
+		define
+			min-zoom : 8
+			line-color : #fffd8b
+			line-width : 10:1;13:2;14:3;15:4;18:12
+		for : highway=tertiary
+			define
+				min-zoom : 11
+		draw : line
+
+
+	target : minor road
+		define
+			min-zoom : 10.5
+			max-zoom : 13.1
+			border-style : none
+			line-color : #D4CCB8
+			line-width : 1
+		draw : line
+		define
+			min-zoom : 13.1
+			max-zoom : 20
+			line-color : white
+			line-width : 13:1.5;14:2.5;15:5;16:10
+		draw : line
+	
+	target : path
+		define
+			min-zoom : 14.5
+			max-zoom : 20
+			line-color : #F8F6EF
+		draw : line
+
+	target : water line
+		define
+			min-zoom : 10
+			line-color : #A5BFDD
+			line-width : 14:1;16:5;20:10
+		draw : line
+
+// landuse
+
+	target : $featuretype(area)
+		define
+			line-style : none
+			line-width : 1
+		if : water
+			define
+				fill-color : #A5BFDD
+		elseif : aeroway area
+			define
+				fill-color : #d1d0cd
+		elseif : industrial
+			define
+				fill-color : #d1d0cd
+		elseif : hospital
+			define
+				fill-color : #e5c6c3
+		elseif : park
+			define
+				fill-color : #b5d29c
+		elseif : sport
+			define
+				fill-color : #d5e1dc
+		elseif : cemetery
+			define
+				fill-color : #d1d0cd
+		elseif : forest
+			define
+				min-zoom : 9
+				fill-color : #CBD8C3
+		else
+			stop
+		draw : fill
+
+		
